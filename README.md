@@ -23,10 +23,12 @@ Desenvolvido com **Python (Flask)** no backend e **React** no frontend, utilizan
 ---
 
 ## 📂 Estrutura do Projeto
+```
 diario-de-treino-crud/
-│── backend/ # API Flask (rotas e integração com SQLite)
-│── frontend/ # Aplicação React (interface de usuário)
-│── README.md # Documentação do projeto
+│── backend/        # API Flask (rotas e integração com SQLite)
+│── frontend/       # Aplicação React (interface de usuário)
+│── README.md       # Documentação do projeto
+```
 
 ---
 
@@ -36,38 +38,42 @@ diario-de-treino-crud/
 ```bash
 git clone https://github.com/SEU-USUARIO/diario-de-treino-crud.git
 cd diario-de-treino-crud
+```
 
-###2. Backend (Flask)
+### 2. Backend (Flask)
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
 venv\Scripts\activate      # Windows
+
 pip install -r requirements.txt
 flask run
+```
 
-###3. Frontend (React)
+### 3. Frontend (React)
 ```bash
 cd frontend
 npm install
 npm start
+```
 
 ---
 
 ## 🔗 Links Úteis
-O frontend rodará em http://localhost:3000
-O backend rodará em http://localhost:5000
+- Frontend: [http://localhost:3000](http://localhost:3000)  
+- Backend: [http://localhost:5000](http://localhost:5000)  
 
 ---
 
-🛠️ Melhorias Futuras
+## 🛠️ Melhorias Futuras
+- API externa para obter dados de exercícios  
+- Montar treinos por dias da semana  
+- Autenticação de usuários  
+- Dashboard com estatísticas de evolução  
+- Deploy em nuvem (Render, Vercel, etc.)  
 
-API externa para obter dados
+---
 
-Montar o treino por dias da semana, etc.
-
-Autenticação de usuários
-
-Dashboard com estatísticas de evolução
-
-Deploy em nuvem (Render, Vercel, etc.)
+## 📌 Objetivo
+Este projeto foi criado como estudo de **CRUD fullstack** para registrar exercícios de academia, servindo como base para evoluir para um diário de treinos mais completo.  
