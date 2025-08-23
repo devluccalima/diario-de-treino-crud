@@ -12,25 +12,25 @@ def get_db_connection():
     return conn
 
 #Define a endpoint da API que o React vai chamar
-@app.route('/api/exercicios', methods=['GET'])
-def get_exercicios():  
+@app.route('/api/rotinas', methods=['GET'])
+def get_rotinas():  
     conn = get_db_connection()
-    exercicios_db = conn.execute('SELECT * FROM exercicios').fetchall()
+    get_rotinas_db = conn.execute('SELECT * FROM rotinas').fetchall()
     conn.close()
-    lista_exercicios = [dict(row) for row in exercicios_db]
+    get_rotinas = [dict(row) for row in get_rotinas_db]
 
-    return jsonify(lista_exercicios)
+    return jsonify(get_rotinas)
 
 # Rota para adicionar um novo exercício
-@app.route('/api/exercicios', methods=['POST'])
-def add_exercicio():
-    novo_exercicio = request.get_json()
+@app.route('/api/rotinas', methods=['POST'])
+def add_newrotina():
+    nova_rotina = request.get_json()
     conn = get_db_connection() # Conecta ao banco de dados
-    conn.execute('INSERT INTO exercicios (nome, repeticoes, series, peso) VALUES (?, ?, ?, ?)', # Insere o novo exercício
-                 (novo_exercicio['nome'], novo_exercicio['repeticoes'], novo_exercicio['series'], novo_exercicio['peso']))
+    conn.execute('INSERT INTO rotinas (nome, dia_da_semana) VALUES (?, ?)', # Insere nova rotina
+                 (nova_rotina['nome'], nova_rotina['dia_da_semana']))
     conn.commit() # Salva as mudanças
     conn.close() # Fecha a conexão com o banco de dados
-    return jsonify({'status': 'success','message': 'Exercício adicionado com sucesso!'})
+    return jsonify({'status': 'success','message': 'Rotina adicionado com sucesso!'})
 
 # Rota para deletar exercício especifico pelo ID
 @app.route('/api/exercicios/<int:id>', methods=['DELETE'])
