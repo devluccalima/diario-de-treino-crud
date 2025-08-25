@@ -1,0 +1,246 @@
+.app-container {
+  display: flex;
+  padding: 24px;
+  gap: 24px;
+}
+
+.main-content {
+  flex: 2;
+  background-color: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.header {
+  text-align: center; /* Centraliza todo o texto dentro dele */
+  margin-bottom: 32px; /* Aumenta o espaço antes da lista */
+}
+
+/* Ajuste no h1 para maior destaque */
+.main-content h1 {
+  text-transform: uppercase; /* Deixa o texto em maiúsculas */
+  letter-spacing: 1.5px; /* Adiciona um pequeno respiro entre as letras */
+  font-size: 2.2em;
+}
+
+/* Ajuste no h2 para um look mais limpo */
+.main-content h2 {
+  border-bottom: none; /* Remove a linha para um look mais minimalista */
+  font-weight: 300; /* Deixa a fonte um pouco mais fina e elegante */
+  color: #a0aec0; /* Um cinza ainda mais suave */
+}
+
+.sidebar {
+  flex: 1;
+  background-color: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  height: fit-content;
+}
+
+/* Estilos para o formulário da barra lateral */
+.sidebar form {
+  display: flex;
+  flex-direction: column; /* Organiza os campos um abaixo do outro */
+}
+
+.form-group {
+  margin-bottom: 16px; /* Espaço entre cada campo (rótulo + input) */
+}
+
+.form-group label {
+  display: block; /* Faz o rótulo ocupar a sua própria linha */
+  font-weight: 600; /* Deixa o texto do rótulo em negrito */
+  margin-bottom: 6px; /* Pequeno espaço entre o rótulo e o input */
+  color: #4a5568;
+  font-size: 0.9em;
+}
+
+/* Botão de adicionar com cor de destaque */
+.btn-add {
+  margin-top: 8px; /* Espaço extra antes do botão */
+  background-color: #48bb78; /* Um verde para a ação de "sucesso" */
+}
+
+.btn-add:hover {
+  background-color: #38a169;
+}
+
+/* Estilos para os Cards da Lista */
+.exercise-card {
+  background-color: #ffffff; /* Fundo branco para o card */
+  border: 1px solid #e2e8f0;   /* Uma borda suave */
+  border-radius: 8px;          /* Cantos arredondados */
+  padding: 16px;               /* Espaçamento interno */
+  margin-bottom: 12px;         /* Espaço entre os cards */
+  display: flex;               /* Usamos flexbox aqui também! */
+  justify-content: space-between; /* Alinha o texto à esquerda e os botões à direita */
+  align-items: center;         /* Alinha tudo verticalmente ao centro */
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out; /* Transição suave */
+}
+
+.exercise-card:hover {
+  transform: translateY(-2px); /* Eleva o card um pouco */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Uma sombra mais pronunciada */
+}
+
+/* Um contentor para as informações do exercício */
+.exercicio-info strong {
+  font-size: 1.1em;
+  color: #2d3748;
+}
+
+.exercicio-info small {
+  color: #718096;
+}
+
+/* Um contentor para os botões para os mantermos juntos */
+.card-actions {
+  display: flex;
+  gap: 8px; /* Espaço entre os botões */
+}
+
+.btn-delete {
+  background-color: #e45635; /* Vermelho */
+}
+
+.btn-delete:hover {
+  background-color: #d60257; /* Vermelho mais escuro ao passar o mouse */
+}
+
+
+/* Estilos do Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 400px; /* Largura máxima */
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* Estilos específicos para os botões do modal */
+.modal-actions .btn-cancel {
+  background-color: #718096; /* Cinza */
+}
+.modal-actions .btn-cancel:hover {
+  background-color: #4a5568;
+}
+
+.modal-actions .btn-confirm {
+  background-color: #e53e3e; /* Vermelho */
+}
+.modal-actions .btn-confirm:hover {
+  background-color: #c53030;
+}
+
+/* Estilos para o Formulário de Edição dentro do Card */
+.edit-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* Organiza os inputs e os botões em coluna */
+}
+
+.edit-form-inputs {
+  display: grid; /* Usar grid para um alinhamento fácil de 2 colunas */
+  grid-template-columns: 1fr 1fr; /* Duas colunas de tamanho igual */
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.edit-form-actions {
+  display: flex;
+  justify-content: flex-end; /* Alinha os botões à direita */
+  gap: 8px;
+}
+
+/* Estilos específicos para os botões de Salvar/Cancelar */
+.edit-form-actions button {
+  width: auto; /* Deixa o botão ter a largura do seu conteúdo */
+  padding: 8px 16px;
+}
+
+.btn-sucess {
+  background-color: #718096; /* Cinza */
+}
+
+.btn-sucess:hover {
+  background-color: #4a5568;
+}
+
+.btn-save {
+  background-color: #48bb78; /* Verde */
+}
+.btn-save:hover {
+  background-color: #38a169;
+}
+
+
+
+/* ===== SISTEMA DE BOTÕES UNIFICADO ===== */
+
+
+/* Estilo base que TODOS os botões vão ter */
+.btn {
+  width: auto; /* Deixa o botão ter a largura do seu conteúdo */
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover {
+  filter: brightness(110%); /* Deixa qualquer cor um pouco mais brilhante */
+}
+
+.btn:active {
+  transform: scale(0.98); /* Efeito de clique */
+}
+
+/* Modificador para Ações Primárias (Adicionar, Salvar) */
+.btn--primary {
+  background-color: #4f46e5; /* Índigo */
+  color: white;
+}
+
+/* Modificador para Ações de Perigo (Excluir) */
+.btn--danger {
+  background-color: #dc2626; /* Vermelho */
+  color: white;
+}
+
+/* Modificador para Ações Secundárias (Editar, Cancelar) */
+.btn--secondary {
+  background-color: #e2e8f0; /* Cinza claro */
+  color: #475569; /* Texto cinza escuro */
+}
+.btn--secondary:hover {
+  background-color: #cbd5e1;
+  filter: none; /* Remove o filtro de brilho para este */
+}
