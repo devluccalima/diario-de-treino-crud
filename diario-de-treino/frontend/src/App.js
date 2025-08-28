@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css'
 import ApiExplorer from './ApiExplores';
+import Rotinas from './Rotinas';
 
 function App() {
 
@@ -241,7 +242,12 @@ function App() {
     //   )}
   //   </>
 
-  <ApiExplorer/>
+  <div className="app-container">
+      <div className="main-content">
+        <Rotinas />
+      </div>
+      {/* A nossa sidebar pode ficar aqui por enquanto, ou podemos removê-la */}
+    </div>
   );
 }
 

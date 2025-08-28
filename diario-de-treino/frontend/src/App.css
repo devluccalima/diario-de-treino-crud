@@ -244,3 +244,9 @@
   background-color: #cbd5e1;
   filter: none; /* Remove o filtro de brilho para este */
 }
+
+/* Pode adicionar no seu App.css */
+ul li:hover {
+  cursor: pointer;
+  background-color: #f0f0f0; /* Uma cor de fundo suave ao passar o mouse */
+}
