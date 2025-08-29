@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
 .app-container {
   display: flex;
   padding: 24px;
@@ -60,12 +62,27 @@
 
 /* Botão de adicionar com cor de destaque */
 .btn-add {
-  margin-top: 8px; /* Espaço extra antes do botão */
-  background-color: #48bb78; /* Um verde para a ação de "sucesso" */
+  background-color: #48bb78; /* Um verde um pouco mais vibrante para a base */
+  font-family: 'Lato', sans-serif;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn-add:hover {
-  background-color: #38a169;
+  background-color: #38a169; /* Um verde um pouco mais escuro no hover */
+  transform: translateY(-2px); /* Desloca ligeiramente para cima */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra suave */
+}
+
+.btn-add:active {
+  /* Quando o botão é clicado, faz um pequeno "push" para baixo */
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 /* Estilos para os Cards da Lista */
@@ -249,4 +266,26 @@
 ul li:hover {
   cursor: pointer;
   background-color: #f0f0f0; /* Uma cor de fundo suave ao passar o mouse */
+}
+
+.btn-voltar {
+  font-family: 'Lato', sans-serif;
+  display: flex;
+  align-items: center; /* Alinha verticalmente ao centro */
+  justify-content: center; /* Alinha horizontalmente ao centro */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  /* Estilos adicionais para consistência */
+  width: auto; /* Para o botão ter a largura do seu conteúdo */
+  padding: 8px 16px; /* Um padding mais equilibrado */
+  font-size: 16px;
+}
+
+.btn-voltar:hover {
+  transform: translateY(-2px); /* Desloca ligeiramente para cima */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra suave */
+}
+
+.btn-voltar:active{
+  transform: translateY(1);
+  box-shadow: none;
 }

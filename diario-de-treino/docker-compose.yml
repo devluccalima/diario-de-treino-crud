@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./backend
+    container_name: diario_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mapeia o código-fonte para que as alterações apareçam ao vivo
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build: ./frontend
+    container_name: diario_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mapeia o código-fonte para que as alterações apareçam ao vivo
+      - ./frontend:/app
+      # Impede que a pasta node_modules local sobrescreva a do contentor
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      # Lê a variável do nosso ficheiro .env
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+    depends_on:
+      - backend

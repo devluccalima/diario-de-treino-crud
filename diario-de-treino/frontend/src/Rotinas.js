@@ -1,143 +1,183 @@
-import { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect, useCallback } from 'react';
+// Importe o FontAwesome se o estiver a usar
+import { BsArrow90DegUp } from "react-icons/bs";
 
 function Rotinas() {
-    const [rotinas, setRotinas] = useState([]);
-    const [nomeRotina, setNomeRotina] = useState('');
-    const [diaSemana, setDiaSemana] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [RotinaSelect, setRotinaSelect] = useState(null);
-    const [termoBusca, setTermoBusca] = useState('');
-    const [resultadosBusca, setResultadosBusca] = useState([]);
-    
+  // --- ESTADOS ---
+  const [rotinas, setRotinas] = useState([]);
+  const [nomeRotina, setNomeRotina] = useState('');
+  const [diaSemana, setDiaSemana] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [rotinaSelecionada, setRotinaSelecionada] = useState(null);
+  const [termoBusca, setTermoBusca] = useState('');
+  const [resultadosBusca, setResultadosBusca] = useState([]);
+  const [exercicioParaAdd, setExercicioParaAdd] = useState(null);
 
 
-    // Função para buscar as rotinas da nossa API
-    const fetchRotinas = () => {
-        fetch('http://127.0.0.1:5000/api/rotinas')
-            .then(res => res.json())
-            .then(data => {
-                setRotinas(data);
-                setLoading(false);
-            })
-            .catch(error => console.error("Erro ao buscar rotinas:", error));
-    };
+  // --- LÓGICA (HANDLERS) ---
 
-    useEffect(() => {
+  // Pega na URL do back-end do nosso ficheiro .env
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+
+  const fetchRotinas = useCallback(() => {
+    fetch(`${backendUrl}/api/rotinas`)
+      .then(res => res.json())
+      .then(data => {
+        setRotinas(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Erro ao buscar rotinas:", error);
+        setLoading(false);
+      });
+  }, [backendUrl]);
+
+  useEffect(() => {
+    fetchRotinas();
+  }, [fetchRotinas]);
+
+  const handleAddRotina = (e) => {
+    e.preventDefault();
+    const novaRotina = { nome: nomeRotina, dia_da_semana: diaSemana };
+
+    fetch(`${backendUrl}/api/rotinas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(novaRotina)
+    })
+      .then(() => {
+        setNomeRotina('');
+        setDiaSemana('');
         fetchRotinas();
-    }, []);
+      });
+  };
 
-    const handleAddRotina = (e) => {
-        e.preventDefault();
-        const novaRotina = { nome: nomeRotina, dia_da_semana: diaSemana };
-        fetch('http://127.0.0.1:5000/api/rotinas', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(novaRotina)
-        })
-            .then(res => res.json())
-            .then(data => {
-                setRotinas([...rotinas, data]);
-                setNomeRotina('');
-                setDiaSemana('');
-            })
-            .catch(error => console.error("Erro ao adicionar rotina:", error));
+  const handleBuscaSubmit = (e) => {
+    e.preventDefault();
+    if (!termoBusca) return;
+    const apiUrl = `https://wger.de/api/v2/exercise/search/?term=${termoBusca}&language=7`;
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        console.log("Exercicios encontrados:", data);
+        setResultadosBusca(data.suggestions || []);
+      })
+      .catch(error => console.error("Erro na busca:", error));
+  };
+
+  const handleAddClick = (item) => {
+    // 'item' é o objeto que vem da busca da WGER
+    // Guardamos os dados essenciais e preparamos os campos para o usuário
+    setExercicioParaAdd({
+      uuid: item.data.uuid,
+      nome: item.value,
+      series: '', // Começa vazio para o usuário preencher
+      repeticoes: '',
+      peso: ''
+    });
+  };
+
+
+  const handleAddExercicioSubmit = (e) => {
+    e.preventDefault();
+    const dadosParaEnviar = {
+      uuid: exercicioParaAdd.uuid,
+      nome: exercicioParaAdd.nome,
+      series: parseInt(exercicioParaAdd.series),
+      repeticoes: parseInt(exercicioParaAdd.repeticoes),
+      peso: parseFloat(exercicioParaAdd.peso)
     };
+    fetch(`${backendUrl}/api/rotinas/${rotinaSelecionada.id}/exercicios`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dadosParaEnviar)
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data.message);
+        setExercicioParaAdd(null); // Fecha a modal
+        // No futuro, aqui vamos também atualizar a lista de exercícios da rotina na tela.
+      })
+      .catch(error => console.error("Erro ao adicionar exercício:", error));
+  };
 
-    const handleBuscaSubmit = (e) => {
-        e.preventDefault();
-        if (!termoBusca) return; // Não busca se o campo estiver vazio
-      
-        // Este é o endpoint de BUSCA da WGER. Note o "?term="
-        const apiUrl = `https://wger.de/api/v2/exercise/search/?term=${termoBusca}&language=7`;
-      
-        fetch(apiUrl)
-          .then(res => res.json())
-          .then(data => {
-            console.log("Resultados da busca:", data);
-            // A API de busca da WGER retorna os resultados dentro de uma chave chamada "suggestions"
-            setResultadosBusca(data.suggestions); 
-          })
-          .catch(error => console.error("Erro na busca:", error));
-      };
+  // --- RENDERIZAÇÃO ---
+  if (loading) {
+    return <p>A carregar rotinas...</p>;
+  }
 
-    if (loading) {
-        return <div>Carregando rotinas...</div>;
-    }
-
-    if (RotinaSelect) { // Lembre-se de usar o nome correto da sua variável de estado
-        return (
-          <div>
-            <button onClick={() => setRotinaSelect(null)} style={{ marginBottom: '16px' }}>
-              <FontAwesomeIcon icon={faArrowLeft} style={{ marginRight: '8px' }} />
-              Voltar para todas as rotinas
-            </button>
-            <h2>{RotinaSelect.nome}</h2>
-            <p>Dia da semana: {RotinaSelect.dia_da_semana}</p>
-            <hr />
-      
-            <h3>Exercícios nesta Rotina:</h3>
-            <p>Nenhum exercício adicionado ainda.</p>
-            
-            <hr style={{ marginTop: '24px' }}/>
-      
-            <h3>Adicionar Exercício da Biblioteca</h3>
-            <form onSubmit={handleBuscaSubmit}>
-              <input
-                type="text"
-                value={termoBusca}
-                onChange={(e) => setTermoBusca(e.target.value)}
-                placeholder="Buscar exercício (ex: Supino)"
-              />
-              <button type="submit">Buscar</button>
-            </form>
-      
-            {/* Lista de Resultados da Busca */}
-            <ul className="search-results">
-              {resultadosBusca.map(item => (
-                <li key={item.data.id}>
-                  <span>{item.value}</span>
-                  <button>+</button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      }
-
+  // NOVIDADE: Se uma rotina estiver selecionada, mostramos a "página" de detalhes
+  if (rotinaSelecionada) {
     return (
-        <div>
-            <h2>Minhas Rotinas</h2>
-            <form onSubmit={handleAddRotina}>
-                {/* ... seu formulário de adicionar rotina continua aqui ... */}
-                <input
-                    type="text"
-                    value={nomeRotina}
-                    onChange={(e) => setNomeRotina(e.target.value)}
-                    placeholder="Nome da Rotina (ex: Treino A)"
-                    required
-                />
-                <input
-                    type="text"
-                    value={diaSemana}
-                    onChange={(e) => setDiaSemana(e.target.value)}
-                    placeholder="Dia da Semana (ex: Segunda-Feira)"
-                    required
-                />
-                <button type="submit">Criar Rotina</button>
-            </form>
-            <hr />
-            <ul>
-                {/* A sua lista de rotinas clicável que acabámos de modificar */}
-                {rotinas.map(rotina => (
-                    <li key={rotina.id} onClick={() => setRotinaSelect(rotina)} style={{ cursor: 'pointer', padding: '8px' }}>
-                        <strong>{rotina.nome}</strong> - {rotina.dia_da_semana}
-                    </li>
-                ))}
-            </ul>
-        </div>
+      <div>
+        <button onClick={() => setRotinaSelecionada(null)} className="btn--secondary btn-voltar" style={{ marginBottom: '24px', width: 'auto', fontSize: '16px', verticalAlign: 'middle', cursor: 'pointer' }}>
+          <BsArrow90DegUp style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+          Voltar para todas as rotinas
+        </button>
+        <h2>{rotinaSelecionada.nome}</h2>
+        <p>Dia da semana: {rotinaSelecionada.dia_da_semana}</p>
+        <hr />
+        <h3>Adicionar Exercício à Rotina</h3>
+        <form onSubmit={handleBuscaSubmit}>
+          <input
+            type="text"
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
+            placeholder="Digite para buscar um exercício..."
+          />
+          <button type="submit">Buscar</button>
+        </form>
+        {/* Lista de Resultados da Busca */}
+        <ul>
+          {resultadosBusca.map(item => (
+            <li key={item.data.id}>
+              <span>{item.value}</span>
+              <button className="btn btn--primary" style={{ padding: '4px 10px' }} onClick={() => handleAddClick(item)}>
+                +
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     );
+  }
+
+  // Se NENHUMA rotina estiver selecionada, mostramos a página principal de sempre
+  return (
+    <div>
+      <h2>Minhas Rotinas</h2>
+      <form onSubmit={handleAddRotina}>
+        <input
+          type="text"
+          value={nomeRotina}
+          onChange={(e) => setNomeRotina(e.target.value)}
+          placeholder="Nome da Rotina (ex: Treino A)"
+          required
+        />
+        <input
+          type="text"
+          value={diaSemana}
+          onChange={(e) => setDiaSemana(e.target.value)}
+          placeholder="Dia da Semana (ex: Segunda)"
+          required
+        />
+        <button type="submit" className='btn-add'>Criar Rotina</button>
+      </form>
+      <hr />
+      <ul>
+        {rotinas.map(rotina => (
+          // Adicionamos o onClick e um pouco de estilo para o cursor mudar
+          <li key={rotina.id} onClick={() => setRotinaSelecionada(rotina)} style={{ cursor: 'pointer', padding: '8px' }}>
+            <strong>{rotina.nome}</strong> - {rotina.dia_da_semana}
+          </li>
+        ))}
+      </ul>
+      {/* Modal de Sucesso (se já tiver uma) */}
+      
+      {/* Modal de Confirmação de Exclusão */}
+      
+    </div>
+  );
 }
 
 export default Rotinas;

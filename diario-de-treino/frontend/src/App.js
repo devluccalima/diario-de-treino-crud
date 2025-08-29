@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import './App.css'
-import ApiExplorer from './ApiExplores';
 import Rotinas from './Rotinas';
 
 function App() {
@@ -17,6 +16,8 @@ function App() {
   // Estado para o modal de DELETAR
   const [itemParaDeletar, setItemParaDeletar] = useState(null);
   const [showSucessModal, setShowSucessModal] = useState(false);
+  const [termoBusca, setTermoBusca] = useState('');
+  const [resultadosBusca, setResultadosBusca] = useState([]);
 
   // --- BUSCA INICIAL DOS DADOS ---
   useEffect(() => {
@@ -91,7 +92,7 @@ function App() {
   // Para o botão de CONFIRMAR do modal (executa a exclusão)
   const confirmDelete = () => {
     if (itemParaDeletar) {
-      fetch(`http://127.0.0.1:5000/api/exercicios/${itemParaDeletar}`, {
+      fetch(`http://localhost:5000/api/exercicios/${itemParaDeletar}`, {
         method: 'DELETE',
       })
         .then(() => {
@@ -113,136 +114,7 @@ function App() {
 
   // --- RENDERIZAÇÃO DO COMPONENTE (JSX) ---
   return (
-    // <>
-    //   <div className="app-container">
-    //     {/* Coluna da Esquerda */}
-    //     <div className="main-content">
-    //       <div className="header">
-    //         <h1>Diário de Treino</h1>
-    //         <h2>Lista de Exercícios</h2>
-    //       </div>
-    //       <ul>
-    //         {exercicios.map((exercicio) => (
-    //           <li className="exercise-card" key={exercicio.id}>
-    //             {/* --- Formulário de Edição --- */}
-    //             {editingId === exercicio.id ? (
-    //               <form onSubmit={handleUpdateSubmit} className='edit-form'>
-    //                 <div className="edit-form-inputs">
-    //                   <input type="text" name="nome" placeholder='Nome do Exercício'value={editFormData.nome} onChange={handleEditFormChange} required />
-    //                   <input type="number" name="series" placeholder='Quantidade de Séries' value={editFormData.series} onChange={handleEditFormChange} required />
-    //                   <input type="number" name="repeticoes" placeholder='Quantidade de Repetições' value={editFormData.repeticoes} onChange={handleEditFormChange} required />
-    //                   <input type="number" name="peso" step="0.5" placeholder='Peso (kg)' value={editFormData.peso} onChange={handleEditFormChange} required />
-    //                 </div>
-    //                 <div className="edit-form-actions">
-    //                   <button className='btn btn--primary' type="submit">Salvar</button>
-    //                   <button className='btn btn--secondary' type="button" onClick={() => setEditingId(null)}>Cancelar</button>
-    //                 </div>
-    //               </form>
-    //             ) : (
-    //               <>
-    //                 {/* --- Modo de Visualização --- */}
-    //                 <div className="exercise-info">
-    //                   <strong>{exercicio.nome}</strong><br />
-    //                   <small>{exercicio.series} séries de {exercicio.repeticoes} repetições com {exercicio.peso}kg</small>
-    //                 </div>
-    //                 <div className='card-actions'>
-    //                   <button className='btn btn--secondary' onClick={() => handleEdit(exercicio)}>Editar</button>
-    //                   <button className='btn btn--danger'onClick={() => handleDelete(exercicio.id)}>Excluir</button>
-    //                 </div>
-    //               </>
-    //             )}
-    //           </li>
-    //         ))}
-    //       </ul>
-    //     </div>
-
-    //     {/* Coluna da Direita */}
-    //     <div className="sidebar">
-    //       <form onSubmit={handleSubmit}>
-    //         <div className='form-group'>
-    //           <label htmlFor='add-nome'>Nome do Exercício</label>
-    //           <input id='add-nome' type='text' name={nome}
-    //             onChange={(e) => setNome(e.target.value)} value={nome} placeholder='Ex: Supino Reto'
-    //             required
-    //           />
-    //         </div>
-
-    //         <div className="form-group">
-    //           <label htmlFor="add-series">Séries</label>
-    //           <input
-    //             id="add-series"
-    //             type="number"
-    //             value={series}
-    //             onChange={(e) => setSeries(e.target.value)}
-    //             min={0}
-    //             required
-    //             placeholder='Ex: 4 Séries'
-    //           />
-    //         </div>
-
-    //         <div className="form-group">
-    //           <label htmlFor="add-repeticoes">Repetições</label>
-    //           <input
-    //             id="add-repeticoes"
-    //             type="number"
-    //             value={repeticoes}
-    //             onChange={(e) => setRepeticoes(e.target.value)}
-    //             min={0}
-    //             required
-    //             placeholder='Ex: 12 Repetições'
-    //           />
-    //         </div>
-
-    //         <div className="form-group">
-    //           <label htmlFor="add-peso">Peso (kg)</label>
-    //           <input
-    //             id="add-peso"
-    //             type="number"
-    //             step="0.5"
-    //             value={peso}
-    //             onChange={(e) => setPeso(e.target.value)}
-    //             min={0}
-    //             required
-    //             placeholder='Ex: 10kg'
-    //           />
-    //         </div>
-
-    //         <button type='submit' className='btn btn--primary' onClick={handleSubmit}>Adicionar Exercício</button>
-
-    //       </form>
-    //     </div>
-    //   </div>
-      
-    //   {/* Modal de Sucesso */}
-    //   {showSucessModal && (
-    //     <div className='modal-overlay'>
-    //       <div className='modal-content'>
-    //         <h3>Sucesso!</h3>
-    //         <p>Exercício adicionado com sucesso.</p>
-    //         <div className='modal-actions'>
-    //           <button className='btn btn--primary' onClick={() => setShowSucessModal(false)}>Fechar</button>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   )}
-
-
-    //   {/* Modal de Confirmação de Exclusão */}
-    //   {itemParaDeletar !== null && (
-    //     <div className='modal-overlay'>
-    //       <div className='modal-content'>
-    //         <h3>Confirmar Exclusão?</h3>
-    //         <p>Você tem certeza que deseja excluir este exercício? Esta ação não pode ser desfeita.</p>
-    //         <div className='modal-actions'>
-    //           <button className='btn btn--secondary' onClick={() => setItemParaDeletar(null)}>Cancelar</button>
-    //           <button className='btn btn--danger' onClick={confirmDelete}>Confirmar</button>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   )}
-  //   </>
-
-  <div className="app-container">
+    <div className="app-container">
       <div className="main-content">
         <Rotinas />
       </div>
