@@ -16,6 +16,9 @@ function Rotinas() {
   const [detalhesRotina, setDetalhesRotina] = useState(null);
   const [exercicioParaDeletar, setExercicioParaDeletar] = useState(null);
   const [exercicioParaEditar, setExercicioParaEditar] = useState(null);
+  const [deletarRotina, setDeletarRotina] = useState(null);
+  const [atualizarRotina, setAtualizarRotina] = useState(null);
+
 
   // --- LÓGICA (HANDLERS) ---
 
@@ -55,6 +58,57 @@ function Rotinas() {
       });
   };
 
+  const handleDeleteRotina = async () => {
+    if (!deletarRotina) return;
+    try {
+      const res = await fetch(`${backendUrl}/api/rotinas/${deletarRotina.id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        throw new Error("Falha ao excluir rotina");
+      }
+      // tenta ler o JSON, mas se não tiver body (ex: 204 No Content), não quebra
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+      console.log(data.message || "Rotina excluída com sucesso");
+      // atualiza a lista no state
+      setRotinas(rotinas.filter(rotina => rotina.id !== deletarRotina.id));
+      setDeletarRotina(null);
+    } catch (error) {
+      console.error("Erro ao excluir rotina:", error);
+    }
+  };
+  
+  const handleEditarRotina = (e) => {
+    e.preventDefault();
+    if (!atualizarRotina) return;
+    // Apenas os campos que podem ser editados
+    const dadosParaEnviar = {
+      nome: atualizarRotina.nome,
+      dia_da_semana: atualizarRotina.dia_da_semana,
+    };
+
+    fetch(`${backendUrl}/api/rotinas/${atualizarRotina.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dadosParaEnviar)
+    })
+      .then(res => res.json())
+      .then(rotinaAtualizada => {
+        // Atualiza a lista no ecrã com os novos dados da rotina
+        setRotinas(rotinas.map(rotina =>
+          rotina.id === rotinaAtualizada.id ? rotinaAtualizada : rotina
+        ));
+        setAtualizarRotina(null); // Fecha a modal
+      })
+      .catch(error => console.error("Erro ao editar rotina:", error));
+  };
+
+
   const handleBuscaSubmit = (e) => {
     e.preventDefault();
     if (!termoBusca) return;
@@ -79,7 +133,6 @@ function Rotinas() {
       peso: '' || 0 // Começa vazio para o usuário preencher
     });
   };
-
 
   const handleAddExercicioSubmit = (e) => {
     e.preventDefault();
@@ -114,7 +167,7 @@ function Rotinas() {
     } catch (error) {
       console.error("Erro:", error);
     }
-  }, []);
+  }, [backendUrl]);
 
   useEffect(() => {
     if (rotinaSelecionada) {
@@ -171,7 +224,7 @@ function Rotinas() {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p className="loading-text">A carregar rotinas...</p>
+        <p className="loading-text">A carregar treinos...</p>
       </div>
     );
   }
@@ -184,7 +237,7 @@ function Rotinas() {
         <div className="header-section">
           <button onClick={() => setRotinaSelecionada(null)} className="btn btn--secondary btn-voltar">
             <BsArrow90DegUp className="icon-back" />
-            Voltar para todas as rotinas
+            Voltar para todas os meus treinos
           </button>
           <div className="routine-header">
             <h1 className="routine-title">{rotinaSelecionada.nome}</h1>
@@ -203,17 +256,17 @@ function Rotinas() {
                       <h3 className="exercise-name">{exercicio.nome_exercicio}</h3>
                       <div className="exercise-details">
                         <span className="detail-item">
-                          <strong>Séries:</strong> {exercicio.series}
+                          <strong>Séries:</strong> {exercicio.series} 
                         </span>
                         <span className="detail-item">
-                          <strong>Repetições:</strong> {exercicio.repeticoes}
+                          <strong>Repetições:</strong> {exercicio.repeticoes} 
                         </span>
                         <span className="detail-item">
-                          <strong>Peso:</strong> {exercicio.peso} kg
+                          <strong>Peso:</strong> {exercicio.peso} kg 
                         </span>
                       </div>
                     </div>
-                    <div className="exercise-actions">
+                    <div className="exercise-card-actions">
                       <button onClick={() => setExercicioParaEditar(exercicio)} className="btn btn--secondary btn-edit">
                         Editar
                       </button>
@@ -325,7 +378,7 @@ function Rotinas() {
           </div>
         )}
 
-        {/* MODAL DE CONFIRMAÇÃO PARA EXCLUIR */}
+        {/* MODAL DE CONFIRMAÇÃO PARA EXCLUIR EXERCICIO */}
         {exercicioParaDeletar && (
           <div className="modal-overlay">
             <div className="modal-content">
@@ -404,8 +457,8 @@ function Rotinas() {
   return (
     <div className="container">
       <div className="header-section">
-        <h1 className="main-title">Minhas Rotinas</h1>
-        <p className="main-subtitle">Gerencie suas rotinas de exercícios</p>
+        <h1 className="main-title">Meus treinos</h1>
+        <p className="main-subtitle">Gerencie suas rotinas de treino.</p>
       </div>
 
       <div className="main-grid">
@@ -413,32 +466,35 @@ function Rotinas() {
           {rotinas.length > 0 ? (
             <div className="routines-list">
               {rotinas.map(rotina => (
-                <div 
-                  key={rotina.id} 
-                  onClick={() => setRotinaSelecionada(rotina)} 
-                  className="routine-card"
-                >
+                <div key={rotina.id} onClick={() => setRotinaSelecionada(rotina)} className="routine-card">
+                <form onSubmit={(e) => {deletarRotina ? handleDeleteRotina(e) : e.preventDefault();}} className="routine-card-form">
                   <div className="routine-card-content">
-                    <h3 className="routine-card-title">{rotina.nome}</h3>
-                    <p className="routine-card-day">{rotina.dia_da_semana}</p>
+                    <div>
+                      <h3 className="routine-card-title">{rotina.nome}</h3>
+                      <p className="routine-card-day">{rotina.dia_da_semana}</p>
+                    </div>
+                    <div className="routine-card-actions">
+                      <button type="button" onClick={(e) => {e.stopPropagation(); setAtualizarRotina(rotina);}} className='btn btn--secondary btn-edit-routine'>Editar</button>
+                      <button type="button" onClick={(e) => {e.stopPropagation(); setDeletarRotina(rotina);}} className="btn btn--danger btn-delete-routine">Excluir</button>
+                    </div>
                   </div>
-                  <div className="routine-card-arrow">→</div>
+                </form>
                 </div>
               ))}
             </div>
           ) : (
             <div className="empty-state">
-              <p>Nenhuma rotina criada ainda.</p>
-              <p className="empty-subtitle">Crie sua primeira rotina usando o formulário ao lado.</p>
+              <p>Nenhuma rotina de treino criada ainda.</p>
+              <p className="empty-subtitle">Crie sua primeria rotina de treino usando o formulário ao lado.</p>
             </div>
           )}
         </div>
 
         <div className="create-routine-section">
-          <h2 className="section-title">Criar Nova Rotina</h2>
+          <h2 className="section-title">Criar Nova Rotina de Treino</h2>
           <form onSubmit={handleAddRotina} className="create-form">
             <div className="form-group">
-              <label htmlFor="nomeRotina">Nome da Rotina</label>
+              <label htmlFor="nomeRotina">Nome da Rotina de Treino:</label>
               <input
                 id="nomeRotina"
                 type="text"
@@ -450,7 +506,7 @@ function Rotinas() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="diaSemana">Dia da Semana</label>
+              <label htmlFor="diaSemana">Dia da Semana que deseja fazer essa rotina:</label>
               <input
                 id="diaSemana"
                 type="text"
@@ -467,6 +523,66 @@ function Rotinas() {
           </form>
         </div>
       </div>
+       {/* MODAL DE CONFIRMAÇÃO PARA EXCLUIR ROTINA */}
+       {deletarRotina && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 className="modal-title">Confirmar Exclusão</h3>
+              <p className="modal-text">
+                Tem a certeza que quer excluir a rotina <strong>"{deletarRotina.nome}"</strong>?
+              </p>
+              <div className="modal-actions">
+                <button onClick={handleDeleteRotina} className="btn btn--danger">
+                  Sim, Excluir
+                </button>
+                <button onClick={() => setDeletarRotina(null)} className="btn btn--secondary">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* MODAL PARA EDITAR ROTINA */}
+        {atualizarRotina && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3 className="modal-title">Editar Rotina</h3>
+              <p className="modal-subtitle">{atualizarRotina.nome}</p>
+              <form onSubmit={handleEditarRotina} className="modal-form">
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label>Nome da Rotina</label>
+                    <input
+                      type="text"
+                      value={atualizarRotina.nome}
+                      onChange={(e) => setAtualizarRotina({ ...atualizarRotina, nome: e.target.value })}
+                      required
+                      className="form-input"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Dia da Semana</label>
+                    <input
+                      type="text"
+                      value={atualizarRotina.dia_da_semana}
+                      onChange={(e) => setAtualizarRotina({ ...atualizarRotina, dia_da_semana: e.target.value })}
+                      required
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+                <div className="modal-actions">
+                  <button type="submit" className="btn btn--primary">
+                    Salvar Alterações
+                  </button>
+                  <button type="button" onClick={() => setAtualizarRotina(null)} className="btn btn--secondary">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
     </div>
   );
 }
